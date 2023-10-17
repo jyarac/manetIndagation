@@ -30,7 +30,9 @@ NS_LOG_COMPONENT_DEFINE("MixedWireless");
 int
 main(int argc, char* argv[])
 {
-
+    int nodeSpeed = 20; // in m/s
+    int nodePause = 0; 
+    //declaring routing protocols
     AodvHelper aodv;
     OlsrHelper olsr;
     DsdvHelper dsdv;
@@ -74,6 +76,33 @@ main(int argc, char* argv[])
     YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
     wifiPhy.SetChannel(wifiChannel.Create());
     NetDeviceContainer manetDevices = wifi.Install(wifiPhy, mac, adhocContainer);
+
+    //setting mobility model
+        MobilityHelper mobilityAdhoc;
+    int64_t streamIndex = 0; // used to get consistent mobility across scenarios
+
+    ObjectFactory pos;
+    pos.SetTypeId("ns3::RandomRectanglePositionAllocator");
+    pos.Set("X", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=300.0]"));
+    pos.Set("Y", StringValue("ns3::UniformRandomVariable[Min=0.0|Max=1500.0]"));
+
+    Ptr<PositionAllocator> taPositionAlloc = pos.Create()->GetObject<PositionAllocator>();
+    streamIndex += taPositionAlloc->AssignStreams(streamIndex);
+
+    std::stringstream ssSpeed;
+    ssSpeed << "ns3::UniformRandomVariable[Min=0.0|Max=" << nodeSpeed << "]";
+    std::stringstream ssPause;
+    ssPause << "ns3::ConstantRandomVariable[Constant=" << nodePause << "]";
+    mobilityAdhoc.SetMobilityModel("ns3::RandomWaypointMobilityModel",
+                                   "Speed",
+                                   StringValue(ssSpeed.str()),
+                                   "Pause",
+                                   StringValue(ssPause.str()),
+                                   "PositionAllocator",
+                                   PointerValue(taPositionAlloc));
+    mobilityAdhoc.SetPositionAllocator(taPositionAlloc);
+    mobilityAdhoc.Install(adhocContainer);
+    streamIndex += mobilityAdhoc.AssignStreams(adhocContainer, streamIndex);
 
 
 
