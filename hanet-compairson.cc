@@ -13,6 +13,12 @@
 #include "ns3/string.h"
 #include "ns3/yans-wifi-channel.h"
 #include "ns3/yans-wifi-helper.h"
+#include "ns3/core-module.h"
+#include "ns3/dsdv-module.h"
+#include "ns3/dsr-module.h"
+#include "ns3/aodv-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/mobility-module.h"
 
 using namespace ns3;
 
@@ -24,13 +30,22 @@ NS_LOG_COMPONENT_DEFINE("MixedWireless");
 int
 main(int argc, char* argv[])
 {
+
+    AodvHelper aodv;
+    OlsrHelper olsr;
+    DsdvHelper dsdv;
+    DsrHelper dsr;
+    DsrMainHelper dsrMain;
+    Ipv4ListRoutingHelper list;
+    InternetStackHelper internet;
+
     //
     // First, we declare and initialize a few local variables that control some
     // simulation parameters.
     //
 
     uint32_t manetNodes = 10;
-
+    //uint32_t routingProtocol;
     //
     // Simulation defaults are typically set next, before command line
     // arguments are parsed.
@@ -59,4 +74,7 @@ main(int argc, char* argv[])
     YansWifiChannelHelper wifiChannel = YansWifiChannelHelper::Default();
     wifiPhy.SetChannel(wifiChannel.Create());
     NetDeviceContainer manetDevices = wifi.Install(wifiPhy, mac, adhocContainer);
+
+
+
 }
