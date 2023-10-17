@@ -47,6 +47,8 @@ main(int argc, char* argv[])
     //
 
     uint32_t manetNodes = 10;
+    //DECLARE m_protocolName
+    std::string m_protocolName = "OLSR";
     //uint32_t routingProtocol;
     //
     // Simulation defaults are typically set next, before command line
@@ -103,6 +105,36 @@ main(int argc, char* argv[])
     mobilityAdhoc.SetPositionAllocator(taPositionAlloc);
     mobilityAdhoc.Install(adhocContainer);
     streamIndex += mobilityAdhoc.AssignStreams(adhocContainer, streamIndex);
+//routing protocols for networks, it depends on the distance between nodes.
+    if (m_protocolName == "OLSR")
+    {
+        list.Add(olsr, 100);
+        internet.SetRoutingHelper(list);
+        internet.Install(adhocContainer);
+    }
+    else if (m_protocolName == "AODV")
+    {
+        list.Add(aodv, 100);
+        internet.SetRoutingHelper(list);
+        internet.Install(adhocContainer);
+    }
+    else if (m_protocolName == "DSDV")
+    {
+        list.Add(dsdv, 100);
+        internet.SetRoutingHelper(list);
+        internet.Install(adhocContainer);
+    }
+    else if (m_protocolName == "DSR")
+    {
+        internet.Install(adhocContainer);
+        dsrMain.Install(dsr, adhocContainer);
+    }
+        else
+    {
+        NS_FATAL_ERROR("No such protocol:" << m_protocolName);
+    }
+
+//clusters lefts
 
 
 
