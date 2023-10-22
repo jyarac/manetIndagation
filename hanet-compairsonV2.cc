@@ -120,7 +120,6 @@ main(int argc, char* argv[])
     OlsrHelper olsr;
     AodvHelper aodv;
     DsdvHelper dsdv;
-    DsrMainHelper dsrMain;
     Ipv4ListRoutingHelper list;
 
     //
