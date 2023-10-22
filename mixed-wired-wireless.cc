@@ -41,7 +41,7 @@
 //                   |       o o o (N backbone routers)       |
 //               +--------+                               +--------+
 //     wired LAN | mobile |                     wired LAN | mobile |
-//L-1 hosts------| router |              L-1 hosts -------| router |
+//    -----------| router |                    -----------| router |
 //               ---------                                ---------
 //                   |                                        |
 //          +----------------+                       +----------------+
@@ -101,7 +101,6 @@ main(int argc, char* argv[])
     // First, we declare and initialize a few local variables that control some
     // simulation parameters.
     //
-
     uint32_t backboneNodes = 10;
     uint32_t infraNodes = 2;
     uint32_t lanNodes = 2;
@@ -112,7 +111,6 @@ main(int argc, char* argv[])
     // Simulation defaults are typically set next, before command line
     // arguments are parsed.
     //
-    
     Config::SetDefault("ns3::OnOffApplication::PacketSize", StringValue("1472"));
     Config::SetDefault("ns3::OnOffApplication::DataRate", StringValue("100kb/s"));
 
@@ -243,7 +241,7 @@ main(int argc, char* argv[])
         //
         CsmaHelper csma;
         csma.SetChannelAttribute("DataRate", DataRateValue(DataRate(5000000)));
-        csma.SetChannelAttribute("Delay",  Value(MilliSeconds(2)));
+        csma.SetChannelAttribute("Delay", TimeValue(MilliSeconds(2)));
         NetDeviceContainer lanDevices = csma.Install(lan);
         //
         // Add the IPv4 protocol stack to the new LAN nodes
@@ -421,7 +419,7 @@ main(int argc, char* argv[])
         Config::Connect("/NodeList/*/$ns3::MobilityModel/CourseChange",
                         MakeCallback(&CourseChangeCallback));
     }
-
+    NS_LOG_UNCOND(lastNodeIndex);
     AnimationInterface anim("mixed-wireless.xml");
 
     ///////////////////////////////////////////////////////////////////////////

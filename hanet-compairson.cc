@@ -32,8 +32,8 @@ main(int argc, char* argv[])
 {
     int nodeSpeed = 20; // in m/s
     int nodePause = 0; 
-    int movilNodes = 2;
-    uint32_t stopTime = 20;
+    int movilNodes = 3;
+    uint32_t stopTime = 100;
     //declaring routing protocols
     Config::SetDefault("ns3::OnOffApplication::PacketSize", StringValue("1472"));
     Config::SetDefault("ns3::OnOffApplication::DataRate", StringValue("100kb/s"));
@@ -53,7 +53,7 @@ main(int argc, char* argv[])
 
     uint32_t manetNodes = 10;
     //DECLARE m_protocolName
-    std::string m_protocolName = "OLSR";
+    std::string m_protocolName = "DSR";
     //uint32_t routingProtocol;
     //
     // Simulation defaults are typically set next, before command line
@@ -210,15 +210,20 @@ main(int argc, char* argv[])
         mobilityAdhoc.Install(stas);
     }
     NS_LOG_INFO("Create Applications.");
+    
+    //create application to send data from the first movilNOde to the last movilNode
+    //create source and sink
+    
     // we want the first node created in the topology to be the source.
-    Ptr<Node> appSource = NodeList::GetNode(manetNodes);
+    
+    /*
+    Ptr<Node> appSource = NodeList::GetNode(10);
     // We want the sink to be the last node created in the topology.
-    uint32_t lastNodeIndex =
-    manetNodes + manetNodes * (movilNodes - 1) - 1;
-    Ptr<Node> appSink = NodeList::GetNode(lastNodeIndex);
-    uint16_t port = 50000;
+    uint32_t lastNodeIndex = manetNodes + manetNodes * (movilNodes - 1) - 1;
+    NS_LOG_UNCOND(lastNodeIndex);
+    Ptr<Node> appSink = NodeList::GetNode(11);
+    uint16_t port = 9;
     Ipv4Address remoteAddr = appSink->GetObject<Ipv4>()->GetAddress(1, 0).GetLocal();
-
     OnOffHelper onoff("ns3::UdpSocketFactory", Address(InetSocketAddress(remoteAddr, port)));
 
     ApplicationContainer apps = onoff.Install(appSource);
@@ -229,6 +234,8 @@ main(int argc, char* argv[])
     PacketSinkHelper sink("ns3::UdpSocketFactory", InetSocketAddress(Ipv4Address::GetAny(), port));
     apps = sink.Install(appSink);
     apps.Start(Seconds(3));
+    */
+
    NS_LOG_INFO("Configure Tracing.");
     CsmaHelper csma;
 
@@ -242,14 +249,15 @@ main(int argc, char* argv[])
     internet.EnableAsciiIpv4All(stream);
 
     // Csma captures in non-promiscuous mode
-    csma.EnablePcapAll("mixed-wireless", false);
+    csma.EnablePcapAll("hanet", false);
     // pcap captures on the backbone wifi devices
-    wifiPhy.EnablePcap("mixed-wireless", manetDevices, false);
+    wifiPhy.EnablePcap("hanet", manetDevices, false);
     // pcap trace on the application data sink
-    wifiPhy.EnablePcap("mixed-wireless", appSink->GetId(), 0);
+    wifiPhy.EnablePcap("hanet", appSink->GetId(), 0);
 
-    AnimationInterface anim("mixed-wireless.xml");
+    AnimationInterface anim("hanet.xml");
     NS_LOG_INFO("Run Simulation.");
+
     Simulator::Stop(Seconds(stopTime));
     Simulator::Run();
     Simulator::Destroy();
